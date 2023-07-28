@@ -103,4 +103,12 @@ w2, b2 = model.get_layer("Layer2").get_weights()
 print(f"w1: {w1}\nb1: {b1}\nShape of w1: {w1.shape} and b1: {b1.shape}")
 print(f"w2: {w2}\nb2: {b2}\nShape of w2: {w2.shape} and b2: {b2.shape}")
 
+#Compile the model
+model.compile(optimizer = "adam", loss = "binary_crossentropy", metrics = ["accuracy"] )
+#OR
+model.compile(
+    loss = tf.keras.losses.BinaryCrossentropy(),
+    optimizer = tf.keras.optimizers.Adam(learning_rate = 0.01)
+)
+
 
