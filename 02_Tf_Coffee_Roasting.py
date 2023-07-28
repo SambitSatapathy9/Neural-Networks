@@ -59,7 +59,48 @@ during training the dataset.
 
 Syntax: 
 new_arr = np.tile(old_arr, (num_of_times_row_copied, num_of_times_column_copied))
-X_t  = np.tile(Xnorm, (1000,1))***
+X_t  = np.tile(Xnorm, (1000,1))
 """
+
+#TENSORFLOW MODEL 
+#There are two layers with the sigmoid activations
+tf.random.set_seed(1223) #applied to acheive consistent results
+model = Sequential(
+    [
+    tf.keras.Input(shape=(2,)),
+    Dense(3, activation = 'sigmoid', name = "Layer1"),
+    Dense(1, activation = 'relu', name = 'Layer2' )
+    ]
+)
+
+model.summary()
+"""
+- In the summary we see that there are 9 parameters in layer 1 and 4 in layer 2. 
+- Let us see explicitely how this works
+### Total No. of neurons in a layer = $ \sum (v_i.n_i) + \sum b_i$
+- $v_i$ is the number of input features
+- $n_i$ = number of units
+- $b_i$ = biases
+
+### $w_i$  = $\sum v_i.n_i$
+
+#Total Number of parameters in layer 1
+### L1_num_params = 2 * 3 + 3 
+- Here 2 - $v_i$ ,  3 - $n_i$ ,  3 - $b_i$
+- In layer 1 we have two input features (temp, duration), 3units(neurons) and 3 biases. w_i = v_i.n_i
+
+### L2_num_params = 3 * 1 + 1 
+- This line calculates the total number of parameters in the second layer of the model. 
+- The second layer has 3 input features (coming from the 3 units of the previous layer) and 1 unit.
+So, there are 3 * 1 = 3 weights (W2 parameters) and 1 bias (b2 parameter).
+"""
+L1_num_params = 2 * 3 + 3
+L2_num_params = 3 * 1 + 1
+
+w1, b1 = model.get_layer("Layer1").get_weights()
+w2, b2 = model.get_layer("Layer2").get_weights()
+
+print(f"w1: {w1}\nb1: {b1}\nShape of w1: {w1.shape} and b1: {b1.shape}")
+print(f"w2: {w2}\nb2: {b2}\nShape of w2: {w2.shape} and b2: {b2.shape}")
 
 
