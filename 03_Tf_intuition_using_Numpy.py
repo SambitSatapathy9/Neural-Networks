@@ -44,21 +44,27 @@ dlcolors = [dlblue, dlorange, dldarkred, dlmagenta, dlpurple]
 #2 Visualise the data
 def plt_roast(X,Y):
     Y = Y.reshape(-1,)
-    colormap = np.array(['r', 'b'])
-    fig, ax = plt.subplots(1,1,)
-    ax.scatter(X[Y==1,0],X[Y==1,1], s=70, marker='x', c='red', label="Good Roast" )
-    ax.scatter(X[Y==0,0],X[Y==0,1], s=100, marker='o', facecolors='none', 
-               edgecolors=dlc["dlblue"],linewidth=1,  label="Bad Roast")
+    fig,ax = plt.subplots(1,1,)
+    
+    #Plotting the points for good and bad roast
+    ax.scatter(X[Y==1,0],X[Y==1,1], marker = 'x', c = 'r', label = 'Good Roast',s=70)
+    ax.scatter(X[Y==0,0],X[Y==0,1], marker = 'o', facecolors = 'none' , edgecolors = 'b',s = 70,linewidth = 1, label = "Bad Roast")
+    
+    #Setting the lines to discriminate good and bad roast
+    ax.axhline(y = 12, c = 'orange', linewidth = 1.2)
+    ax.axvline(x = 175,c='orange',linewidth = 1.2)
+      #Setting the diagonal line
     tr = np.linspace(175,260,50)
-    ax.plot(tr, (-3/85) * tr + 21, color=dlc["dlpurple"],linewidth=1)
-    ax.axhline(y=12,color=dlc["dlpurple"],linewidth=1)
-    ax.axvline(x=175,color=dlc["dlpurple"],linewidth=1)
-    ax.set_title(f"Coffee Roasting", size=16)
-    ax.set_xlabel("Temperature \n(Celsius)",size=12)
-    ax.set_ylabel("Duration \n(minutes)",size=12)
+    ax.plot(tr, (-3/85)*tr + 21, c = 'orange', linewidth =1.2)    
+   
+    #Setting the titles
+    ax.set_ylabel("Duration (in minutes)")
+    ax.set_xlabel("Temperature(in degree C)")
+    ax.set_title("Coffee Roasting")
     ax.legend(loc='upper right')
-    plt.show()
 
+    plt.show()
+    
 #1. DEFINE SIGMOID FUNCTION
 def sigmoid(z):
     g = 1/(1+np.exp(-z))
