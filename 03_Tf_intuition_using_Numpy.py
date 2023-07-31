@@ -117,3 +117,23 @@ def predict(X,W1,b1,W2,b2):
         p[i,0] = sequential(X[i],W1,b1,W2,b2)
     return p
 
+#4 Trained weights and biases samples
+
+W1_tmp = np.array( [[-8.93,  0.29, 12.9 ], [-0.1,  -7.32, 10.81]] )
+b1_tmp = np.array( [-9.82, -9.28,  0.96] )
+W2_tmp = np.array( [[-31.18], [-27.59], [-32.56]] )
+b2_tmp = np.array( [15.41] )
+
+#5. Test the routine on two examples
+X_tst = np.array([
+    [200,13.9], #Positive example
+    [200,17]    #Negative example
+])
+
+X_tstn = norm_l(X_tst)
+predictions = predict(X_tstn,W1_tmp,b1_tmp,W2_tmp,b2_tmp)
+
+#We can write it in the following way in binary form
+yhat = (predictions>=0.5).astype(int)
+print(f"Decisions: \n{yhat}")
+
