@@ -85,3 +85,35 @@ norm_l.adapt(X) #learns mean and variance
 Xn = norm_l(X)
 print(f"Temperature Max, Min post normalization: {np.max(Xn[:,0]):0.2f}, {np.min(Xn[:,0]):0.2f}")
 print(f"Duration    Max, Min post normalization: {np.max(Xn[:,1]):0.2f}, {np.min(Xn[:,1]):0.2f}")
+
+## 3 DEFINE THE FUNCTIONS
+
+#3.0 Define the activation function
+g = sigmoid 
+
+#3.1 Define the dense function
+def dense(a_in,W,b):
+    units = W.shape[1] #Number of columns in the weight parameter defines number of neurons in the layer
+    a_out = np.zeros(units)
+    for j in range(units):
+        # W = W[:,j] #Get weight of the jth neuron. It selects all rows and jth coloumn
+        z = np.dot(a_in,W[:,j]) + b[j]  #z represents the neuron's pre-activation value.
+        a_out[j] = g(z)  #The output activation a_out[j] is stored in the a_out array for the j-th neuron.
+        
+    return a_out
+    
+#3.2 Define the sequential function 
+#The sequential function represents a simple feedforward neural network with two dense layers. 
+def sequential(x, W1,b1,W2,b2):
+    a1 = dense(x,W1,b1)
+    a2 = dense(a1,W2,b2)
+    return a2
+
+#3.3 Define the predict function
+def predict(X,W1,b1,W2,b2):
+    m = X.shape[0]
+    p = np.zeros((m,1))
+    for i in range(m):
+        p[i,0] = sequential(X[i],W1,b1,W2,b2)
+    return p
+
