@@ -21,3 +21,19 @@ model.fit(X,y, epochs = 100)
 
 #Prediction
 pred = model.predict(X)
+
+
+#There is another preffered way to write the above model using logits
+
+model_new = Sequential([
+    Dense(25, activation = 'relu'),
+    Dense(15, activation = 'relu'),
+    Dense(10, activation = 'linear')
+])
+
+#Compile the model
+model_new.compile(loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+             optimizer = tf.keras.optimizers.Adam(0.001))
+
+#Fit the model
+model_new.fit(X,y, epochs = 10)
