@@ -67,7 +67,22 @@ plt.show()
    In matplotlib, 'C0', 'C1', 'C2', etc., represent distinct colors from the default color cycle.
 """
 
+model = Sequential([
+    Dense(25, activation = 'relu'),
+    Dense(20, activation = 'relu'), 
+    Dense(4, activation = 'softmax')
+])
 
+#Compile the model
+model.compile(loss = tf.keras.losses.SparseCategoricalCrossentropy(),
+             optimizer = tf.keras.optimizers.Adam(0.001))
 
+#Fit the model
+model.fit(X_train,y_train,epochs = 10)
 
+#Prediction
+pred_original = model.predict(X_train)
+
+print(pred_original[:2])
+print(f"Largest Value: {np.max(pred_original)}\nSmallest Value: {np.min(pred_original)}")
 
