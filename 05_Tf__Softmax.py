@@ -86,3 +86,56 @@ pred_original = model.predict(X_train)
 print(pred_original[:2])
 print(f"Largest Value: {np.max(pred_original)}\nSmallest Value: {np.min(pred_original)}")
 
+## Preffered Model
+### with logits
+model_new = Sequential([
+    Dense(25, activation = 'relu'),
+    Dense(15, activation = 'relu'),
+    Dense(4, activation = 'linear')
+])
+
+model_new.compile(loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+             optimizer = tf.keras.optimizers.Adam(0.001))
+
+model_new.fit(X_train,y_train, epochs = 10)
+
+preferred = model_new.predict(X_train)
+print(f"two example output vectors:\n {preferred[:2]}")
+print("largest value", np.max(preferred), "smallest value", np.min(preferred))
+"""
+#### Output Handling
+Notice that in the preferred model, the outputs are not probabilities, but can range from large negative numbers to 
+large positive numbers. The output must be sent through a softmax when performing a prediction that expects a probability. 
+"""
+smax_preferred = tf.nn.softmax(preferred).numpy()
+print(f"Two examples output vectors:\n{smax_preferred[:2]}")
+print("largest value", np.max(smax_preferred),"\nsmallest value", np.min(smax_preferred))
+"""
+**nn**: Short for neural networks. It's a sub-module within TensorFlow that contains various functions and operations
+related to neural networks.
+
+To select the most likely category, the softmax is not required. One can find the index of the largest output using [np.argmax()]
+'"""
+cluster_names = ['Bus',"Car","Cycle","Train"]
+print(cluster_names)
+for i in range(15):
+    pref_index = np.argmax(preferred[i])
+    cluster_name = cluster_names[pref_index] 
+    print(f"{preferred[i]}, category: {cluster_name}")
+
+for i  in range(12):
+    pref_index = np.argmax(preferred[i])
+    cluster_name = cluster_names[pref_index] 
+    print(f"{smax_preferred[i]}, category: {np.argmax(smax_preferred[i])}")
+
+"""
+## SparseCategorialCrossentropy or CategoricalCrossEntropy
+Tensorflow has two potential formats for target values and the selection of the loss defines which is expected.
+- SparseCategorialCrossentropy: expects the target to be an integer corresponding to the index. For example, if there
+are 10 potential target values, y would be between 0 and 9. 
+- CategoricalCrossEntropy: Expects the target value of an example to be one-hot encoded where the value at the 
+target index is 1 while the other N-1 entries are zero. An example with 10 potential target values, where the target
+is 2 would be [0,0,1,0,0,0,0,0,0,0].
+"""
+
+
