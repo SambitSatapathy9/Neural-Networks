@@ -101,7 +101,67 @@ print(f"Cross Validation MSE for Polynomial features: {mse_cv_poly_sklearn}")
   We'll plot it at the end to make it easier to compare the results for each model.
 """
 # 4. Generalisation of Polynomial Features
+## 1. Initialise lists containing training MSEs, CV MSEs , models and scalars
+train_mses = []
+cv_mses = []
+models = []
+scalers = []
 
+## 2. Loop over 10 times. Each adding one more degree of polynomial higher than the previous.
+for degree in range (1,11):
+    ## 2.1 TRAINING SET
+    ### 2.1.1 Adding polynomial feature
+    poly = PolynomialFeatures(degree, include_bias = False)
+    X_train_mapped = poly.fit_transform(x_train)
+     #print(X_train_mapped)
+    
+    ### 2.1.2 Scale the training set
+    scaler = StandardScaler()
+    X_train_mapped_scaled = scaler.fit_transform(X_train_mapped)
+    scalers.append(scaler)
+     #print(scalers)
+    
+    ### 2.1.3 Create and train the model
+    model = LinearRegression()
+    model.fit(X_train_mapped_scaled, y_train)
+    models.append(model)
+     #print(models)
+        
+    ### 2.1.4 Compute the training MSEs    
+    yhat_train = model.predict(X_train_mapped_scaled)
+    train_mse = mean_squared_error(y_train, yhat_train) / 2
+    train_mses.append(train_mse)
+     #print(train_mses)
+    
+    ## 2.2 CROSS VALIDATION SET    
+    ### 2.2.1 Adding polynomial features and scale the CV set 
+    X_cv_mapped = poly.fit_transform(x_cv)
+    X_cv_mapped_scaled = scaler.transform(X_cv_mapped)
+    
+    ### 2.2.3 Compute the Cross Validation MSE
+    yhat_cv = model.predict(X_cv_mapped_scaled)
+    cv_mse = mean_squared_error(y_cv, yhat_cv) / 2
+    cv_mses.append(cv_mse)
 
+    
+## 3. Plot the results    
+degrees = range(1,11)
+plt.plot(degrees, train_mses, label = 'Train MSEs', marker = 'o',c='r', linewidth = 2)
+plt.plot(degrees, cv_mses, label = 'CV MSEs', marker = 'o', c='b', linewidth = 2)
+plt.legend()
+plt.show()
 
+### Choosing the best model
+"""
+- While selecting a model we want to choose the one that performs well both on the training set as well as the CV set. 
+- It implies that the model is able to learn the patterns from your training set without overfitting. 
+- We can observe in the plots the sudden decrease in the cv error from the models with degree=1 to degree=2, followed by a relatively flat line thorugh degree=5.
+- However, the cv error is getting worse when the degree increases further from degree=6 ,i.e. as we add more polynomial features.
+- Given these, we can decide to use the model with the lowest `cv_mse` as the one best suited for our application
+"""
+## Get the model with the lowest CV MSE (add 1 because list indices start at 0)
+# This also corresponds to the degree of the polynomial added
+
+degree = np.argmin(cv_mses) + 1
+print(f"Lowest cross validation error is found in the model with degree = {degree}")
 
