@@ -79,11 +79,72 @@ print(f"Shape of cross-validation set input and target is {x_cv.shape} and {y_cv
 print(f"Shape of the test set input and target is {x_test.shape} and {y_test.shape}")
 
 #Visualise the train, cv and test data
-X = [x_train,x_cv,x_test]
-Y = [y_train,y_cv,y_test]
 plt.scatter(x_train,y_train, marker = 'x', c='r', linewidths=2, label='Train')
 plt.scatter(x_cv,y_cv, marker = 'o', c='b',label='CV')
 plt.scatter(x_test,y_test, marker = '^', c='g',label='Test')
 plt.legend()
 plt.show()
+
+#Fit a linear model
+##2.2 Feature Scaling
+"""
+It is good practice to do feature scaling to help the model converge faster. 
+First, we will scale the features using the sklearn `StandardScaler` class which z score normalises the feature 
+$$z = \frac{x-\mu}{\sigma}$$
+"""
+# Initialise the class
+scaler_linear = StandardScaler()
+
+#Compute the mean and standard deviation of the training set then transform it
+X_train_scaled = scaler_linear.fit_transform(x_train)
+print(f"Mean of the training set: {scaler_linear.mean_.squeeze():.2f}") 
+# print(f"Mean of the training set: {scaler_linear.mean_}") #Display as list
+print(f"Standard Deviation of the training set: {scaler_linear.scale_.squeeze():.2f}")
+# print(f"Standard Deviation of the training set: {scaler_linear.scale_}") #Display as list
+
+plt.scatter(X_train_scaled, y_train,marker = 'x', linewidths=2,c = 'r')
+plt.title("Scaled Input vs target")
+plt.suptitle("The range of x has now reduced significantly")
+plt.xlabel("X_scaled"); plt.ylabel("y")
+
+##2.3 Train the model
+linear_model = LinearRegression() #Instantiate the class
+linear_model.fit(X_train_scaled, y_train) #Fit the model
+
+##2.4 Evaluate the model
+"""
+- We can use the `predict` method from sklearn
+- Scikit-learn also has a built-in [`mean_squared_error()`]
+- For the training error, recall the equation for calculating the mean squared error (MSE):
+$$J_{train}(\vec{w}, b) = \frac{1}{2m_{train}}\left[\sum_{i=1}^{m_{train}}(f_{\vec{w},b}(\vec{x}_{train}^{(i)}) - y_{train}^{(i)})^2\right]$$
+"""
+
+yhat = linear_model.predict(X_train_scaled)
+
+#Use sklearn's utility function and divide by 2
+mse_sklearn = mean_squared_error(yhat,y_train)/2
+print(f"Training MSE using sklearn: {sklearn_MSE:.9f}")
+
+#Using the formula for MSE
+mean_error = 0
+for i in range(len(yhat)):
+  sq_err_i = (yhat[i]-y_train[i])**2
+  mean_error += sq_err_i
+
+mse = mean_error/(2*len(yhat))
+print(f"Training MSE using formula: {mse.squeeze():.9f}")
+
+#CROSS VALIDATION
+"""
+#### We can then compute the MSE for the CROSS VALIDATION SET with basically the same equation
+
+- As with the training set, we will also want to scale the cross validation set. An important thing to note when using
+the z-score is we have to use the mean and standard deviation of the training set when scaling the cross validation set. 
+This is to ensure that our input features are transformed as expected by the model.
+
+- We will scale the cross validation set below by using the same `StandardScaler` we used earlier but only calling 
+its `transform()` method instead of `fit_transform()`.
+"""
+
+
 
