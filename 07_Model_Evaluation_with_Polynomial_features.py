@@ -70,9 +70,37 @@ X_train_mapped_scaled = scaler_poly.fit_transform(X_train_mapped) #It computes m
 #Print first 6 elements of the scaled training set
 print(X_train_mapped_scaled[:6])
 
+#Instantiate the class
+model = LinearRegression()
 
+#Fit the model
+model.fit(X_train_mapped_scaled,y_train)
 
+#Compute Prediction for training set
+yhat_poly = model.predict(X_train_mapped_scaled)
 
+#Compute MSE for training set
+mse_poly_sklearn = mean_squared_error(yhat_poly,y_train)/2
+print(f"Training MSE for Polynomial features: {mse_poly_sklearn}")
+
+## 3.3 Cross-Validation Set
+#Adding the polynomial feature to the CV set
+X_cv_mapped = poly.transform(x_cv)
+#Scale the CV set 
+X_cv_mapped_scaled = scaler_poly.transform(X_cv_mapped)
+#Compute CV MSE
+yhat_cv_poly = model.predict(X_cv_mapped_scaled)
+
+mse_cv_poly_sklearn = mean_squared_error(yhat_cv_poly,y_cv)/2
+print(f"Cross Validation MSE for Polynomial features: {mse_cv_poly_sklearn}")
+
+"""
+- It can be noticed that the MSEs are significantly better for both the training and cross validation set when you added the 2nd order polynomial. 
+- We may want to introduce more polynomial terms and see which one gives the best performance. As shown in class, We can have 10 different models.
+- We can create a loop that contains all the steps in the previous code cells. Here is one implementation that adds polynomial features up to degree=10. 
+  We'll plot it at the end to make it easier to compare the results for each model.
+"""
+# 4. Generalisation of Polynomial Features
 
 
 
