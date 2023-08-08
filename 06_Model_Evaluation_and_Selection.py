@@ -145,6 +145,17 @@ This is to ensure that our input features are transformed as expected by the mod
 - We will scale the cross validation set below by using the same `StandardScaler` we used earlier but only calling 
 its `transform()` method instead of `fit_transform()`.
 """
+X_cv_scaled = scaler_linear.transform(x_cv) #This will scale the x_cv with the mean and std deviation of the earlier case i.e the training example. 
 
+#Used mean and standard deviation for cv scaled model
+print(f"Mean used to scale the cv model: {scaler_linear.mean_.squeeze():.2f}")
+print(f"Standard Deviation used to scale the cv model: {scaler_linear.scale_.squeeze():.2f}")
+
+#Feed the scaled validation set
+yhat_cv = linear_model(X_cv_scaled)
+
+#Use sklearn's utility function to calculate MSE
+mean_error_cv = mean_squared_error(yhat_cv,y_cv)/2
+print(f"Cross validation MSE: {mean_error_cv}")
 
 
