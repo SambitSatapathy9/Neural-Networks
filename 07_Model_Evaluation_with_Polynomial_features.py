@@ -165,3 +165,23 @@ plt.show()
 degree = np.argmin(cv_mses) + 1
 print(f"Lowest cross validation error is found in the model with degree = {degree}")
 
+#TEST SET
+
+## Add Polynomial features
+poly = PolynomialFeatures(degree, include_bias  = False)
+X_test_mapped = poly.fit_transform(x_test)
+
+## Scale the feature
+X_test_mapped_scaled = scalers[degree-1].transform(X_test_mapped)
+
+## Compute the MSE
+yhat = models[degree-1].predict(X_test_mapped_scaled)
+test_mse = mean_squared_error(yhat,y_test) / 2
+
+print(f"Training MSEs: {train_mses[degree-1]}")
+print(f"Cross-Validation MSEs: {cv_mses[degree-1]}")
+print(f"Test MSEs: {test_mse}")
+
+
+
+
