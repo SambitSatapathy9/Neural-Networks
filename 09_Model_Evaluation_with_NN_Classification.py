@@ -115,3 +115,74 @@ def build_models(model):
     return model_list
 
 #1.6 Train the model
+#Initialise the lists that contain the train and cv error
+nn_train_error_bc = []
+nn_cv_error_bc = []
+
+#Build the models
+models_bc = build_models()
+
+#Loop over each model
+for model in models_bc:
+    
+    #Compile the model - Setup loss and opti,izer
+    model.compile(loss     = tf.keras.losses.BinaryCrossentropy(from_logits = True),
+                 optimizer = tf.keras.optimizers.Adam(learning_rate=0.01))
+    print(f"Training {model.name}")
+    
+    #Fit the model- Train the model
+    model.fit(X_bc_train_scaled, y_bc_train, epochs = 200, verbose=0)
+    print("Done!\n")
+    
+    #Set threshold for classification
+    threshold = 0.5
+    
+    #Record fractional error for training set
+    yhat_bc = model.predict(X_bc_train_scaled)
+    yhat_bc = tf.math.sigmoid(yhat_bc)
+    yhat_bc = np.where(yhat_bc >= threshold, 1, 0)
+    
+    train_error = np.mean(yhat_bc != y_bc_train)
+    nn_train_error_bc.append(train_error)
+    
+    #Record fractional error for CV set
+    yhat_cv_bc = model.predict(X_bc_cv_scaled)
+    yhat_cv_bc = tf.math.sigmoid(yhat_cv_bc)
+    yhat_cv_bc = np.where(yhat_cv_bc >= threshold,1,0)
+    
+    cv_error = np.mean(yhat_cv_bc != y_bc_cv)
+    nn_cv_error_bc.append(cv_error)
+    
+#Print the results
+print(f"RESULTS\n")
+for index in range(len(nn_train_error_bc)):
+    print(f" Model {index+1}: Train set Classification error: {nn_train_error_bc[index]:.5f}, "+
+          f" CV set Classification error: {nn_cv_error_bc[index]:.5f}\n ")
+
+"""
+From the output above, we can choose which one performed best.
+If there is a tie on the cross validation set error, then we can pick the one with the lower training set error. 
+Finally, we can compute the test error to report the model's generalization error.
+"""
+#Select the model with least CV error
+model_num = 3
+
+yhat_test_bc = models_bc[model_num-1].predict(X_bc_test_scaled)
+yhat_test_bc = tf.math.sigmoid(yhat_test_bc)
+yhat_test_bc = np.where(yhat_test_bc >= threshold,1,0)
+
+test_error_bc = np.mean(yhat_test_bc != y_bc_test)
+
+print(f"Selected Model {model_num}")
+print(f"Training set Classification Error: {nn_train_error_bc[model_num-1]:.3f}")
+print(f"CV set Classification Error: {nn_cv_error_bc[model_num-1]:.3f}")
+print(f"Test set Classification Error: {test_error_bc:.3f}")
+
+
+
+
+
+
+
+
+
