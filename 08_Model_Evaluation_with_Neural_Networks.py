@@ -73,8 +73,75 @@ def build_models(model):
     Dense(1,  activation = 'linear')
     ], name = 'model_1'
   )
+   model_2 = Sequential([
+        Dense(20, activation = 'relu'),
+        Dense(12, activation = 'relu'),
+        Dense(12, activation = 'relu'),
+        Dense(12, activation = 'relu'),
+        Dense(1, activation = 'linear'),
+    ], name = 'model_2')
+    
+    model_3 = Sequential([
+        Dense(32, activation = 'relu'),
+        Dense(16, activation = 'relu'),
+        Dense(8,  activation = 'relu'),
+        Dense(4,  activation = 'relu'),
+        Dense(12, activation = 'relu'),
+        Dense(1,  activation = 'linear'),
+        
+    ], name = 'model_3')
+    
+    model_list = [model_1, model_2, model_3]
+    
+    return model_list
 
 
+#Initialize the lists that contains errors for each model
+nn_train_mses = []
+nn_cv_mses = []
+
+#Build the models
+nn_models = build_models()
+
+#Loop over the models
+for model in nn_models:
+    
+    #Setup loss and optimizer
+    model.compile(loss = 'mse', optimizer = tf.keras.optimizers.Adam(learning_rate= 0.1))
+    print(f"Trainig {model.name}....")
+    
+    #Train the model
+    model.fit(X_train_mapped_scaled,y_train, epochs = 300, verbose = 0)
+    print(f"Done!\n")
+    
+    #Record the training mses
+    yhat_train = model.predict(X_train_mapped_scaled)
+    mse_train  = mean_squared_error(yhat_train, y_train) / 2
+    nn_train_mses.append(mse_train)
+    
+    #Record the cv mses
+    yhat_cv = model.predict(X_cv_mapped_scaled)
+    cv_mse  = mean_squared_error(yhat_cv, y_cv) / 2
+    nn_cv_mses.append(cv_mse)
+    
+# Print the Results
+print("RESULTS\n")
+
+for index in range(len(nn_train_mses)):
+    print(f"Model {index + 1}: Training MSE : {nn_train_mses[index]:.2f}"+
+          f"  CV MSE : {nn_cv_mses[index]:.2f}")
+
+##Next we select the model with least CV error
+model_num = 3 #with index = 2
+
+#Compute the test MSE
+yhat_test = nn_models[model_num-1].predict(X_test_mapped_scaled)
+test_mse = mean_squared_error(yhat_test, y_test) / 2
+
+print(f"Selected Model : {model_num}")
+print(f"Training MSE: {nn_train_mses[model_num-1]:.2f}")
+print(f"Cross Validation MSE: {nn_cv_mses[model_num-1]:.2f}")
+print(f"Test MSE: {test_mse:.2f} ")
 
 
 
