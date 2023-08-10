@@ -232,12 +232,43 @@ train_plot_reg_params(reg_params,x_train,y_train,x_cv,y_cv,degree = 1, baseline 
 """
 ## Fixing HIgh Variance
 """
+### 2.4 **Try increasing the regularization parameter**
+reg_params = [0.01,0.02,0.05,0.1,0.2,0.5,1]
+train_plot_reg_params(reg_params,x_train,y_train,x_cv,y_cv,degree=4,baseline=250)
+#### Still the cross validation error persists
+"""
+### 2.5 Try smaller set of features
+You've already seen in the last lab that having too many polynomial terms can result in overfitting. You can reduce 
+the number of such terms and see where you get the best balance of training and cross validation error.
+Another scenario where reducing the number of features would be helpful is when you have irrelevant features in your
+data. For example, patient IDs that hospitals give will not help in diagnosing a tumor so you should make sure to 
+remove it from your training data.
+To illustrate how removing features can improve performance, you will do polynomial regression for 2 datasets: 
+the same data you used above (2 features) and another with a random ID column (3 features). 
+You can preview these using the cell below. Notice that 2 columns are identical and a 3rd one is added to include 
+random numbers.
+"""
+# Prepare dataset with randomID feature
+x_train, y_train, x_cv, y_cv, x_test, y_test = utils.prepare_dataset('data/c2w3_lab2_data2.csv')
 
+# Preview the first 5 rows
+print(f"first 5 rows of the training set with 2 features:\n {x_train[:5]}\n")
 
+# Prepare dataset with randomID feature
+x_train, y_train, x_cv, y_cv, x_test, y_test = utils.prepare_dataset('data/c2w3_lab2_data3.csv')
 
+# Preview the first 5 rows
+print(f"first 5 rows of the training set with 3 features (1st column is a random ID):\n {x_train[:5]}\n")
+"""
+Now you will train the models and plot the results. The solid lines in the plot show the errors for the data with 2
+features while the dotted lines show the errors for the dataset with 3 features. As you can see, the one with 3 
+features has higher cross validation error especially as you introduce more polynomial terms. 
+This is because the model is also trying to learn from the random IDs even though it has nothing to do with the target. 
 
-
-
+Another way to look at it is to observe the points at degree=4. You'll notice that even though the *training error* 
+is lower with 3 features, the *gap between the training error and cross validation error* is a lot wider than when 
+you only use 2 features. This should also warn you that the model is overfitting.
+"""
 
 
 
