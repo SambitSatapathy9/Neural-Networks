@@ -45,6 +45,7 @@ import utils
 """
 ## 2. Fixing High Bias
 ### 2.1 Try adding polynomial features
+
 Here we will use a synthetic dataset for a regression problem with one feature and one target. 
 In addition, we will also define an arbitrary baseline performance and include it in the plot.
 """
@@ -145,7 +146,7 @@ models are still considered high bias. You can then try other methods to improve
 train_plot_poly(model, x_train, y_train, x_cv, y_cv, max_degree= 10, baseline = 250)
 
 """
-### Try getting additional features
+### 2.2 Try getting additional features
 Another thing you can try is to acquire other features. Let's say that after you got the results above, you decided to launch another data collection 
 campaign that captures another feature. Your dataset will now have 2 columns for the input features as shown below.
 """
@@ -162,3 +163,96 @@ print(f"first 5 rows of the training inputs (2 features):\n {x_train[:5]}\n")
 model = LinearRegression()
 train_plot_poly(model, x_train, y_train, x_cv, y_cv, max_degree= 6, baseline = 250)
 #In the above plot we can see that there is **low train error, high cv error - thus Overfitting**
+
+"""
+### 2.3 Try decreasing the regulariztion parameter
+
+To avoid overfitting we might introduce the regularization parameter \lambda. We must choose an appropiate lambda
+which is not too high(which can lead to underfitting) or too low(overfitting).
+The cell below trains a 4th degree polynomial model using the **`Ridge (L2 regularization)`** class which allows us
+to set a regularization parameter.
+"""
+#Define \lambdas to plot
+reg_params = [10,5,2,1,0.5,0.2,0.1]
+
+#Define degree of polynomial and train for each lambda
+def train_plot_reg_params(reg_params, x_train, y_train, x_cv, y_cv, degree= 1, baseline=None):
+    
+    train_mses = []
+    cv_mses = []
+    models = []
+    scalers = []
+
+    # Loop over 10 times. Each adding one more degree of polynomial higher than the last.
+    for reg_param in reg_params:
+
+        # Add polynomial features to the training set
+        poly = PolynomialFeatures(degree, include_bias=False)
+        X_train_mapped = poly.fit_transform(x_train)
+
+        # Scale the training set
+        scaler_poly = StandardScaler()
+        X_train_mapped_scaled = scaler_poly.fit_transform(X_train_mapped)
+        scalers.append(scaler_poly)
+
+        # Create and train the model
+        model = Ridge(alpha=reg_param)
+        model.fit(X_train_mapped_scaled, y_train)
+        models.append(model)
+
+        # Compute the training MSE
+        yhat = model.predict(X_train_mapped_scaled)
+        train_mse = mean_squared_error(y_train, yhat) / 2
+        train_mses.append(train_mse)
+
+        # Add polynomial features and scale the cross-validation set
+        poly = PolynomialFeatures(degree, include_bias=False)
+        X_cv_mapped = poly.fit_transform(x_cv)
+        X_cv_mapped_scaled = scaler_poly.transform(X_cv_mapped)
+
+        # Compute the cross-validation MSE
+        yhat = model.predict(X_cv_mapped_scaled)
+        cv_mse = mean_squared_error(y_cv, yhat) / 2
+        cv_mses.append(cv_mse)
+
+    # Plot the results
+    reg_params = [str(x) for x in reg_params]
+    plt.plot(reg_params, train_mses, marker='o', c='r', label='training MSEs',linewidth=2); 
+    plt.plot(reg_params, cv_mses, marker='o', c='b', label='CV MSEs',linewidth=2); 
+    plt.plot(reg_params, np.repeat(baseline, len(reg_params)), linestyle='--', label='baseline',linewidth=2)
+    plt.title("lambda vs. train and CV MSEs")
+    plt.xlabel("regularization parameter($\lambda$)"); 
+    plt.ylabel("MSE"); 
+    plt.legend()
+    plt.show()
+
+train_plot_reg_params(reg_params,x_train,y_train,x_cv,y_cv,degree = 1, baseline = 250)
+#-  The above plot now suffers from **high variance** problem as **$J_{cv}$ >> $J_{train}$**
+
+"""
+## Fixing HIgh Variance
+"""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
