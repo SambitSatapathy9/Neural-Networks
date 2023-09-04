@@ -1,0 +1,70 @@
+"""
+# Decision Trees
+In a decision tree, we decide if a node will be split or not by looking at the **information gain** that split would give us. (Image of video IG)
+
+Where 
+
+$$\text{Information Gain} = H(p_1^\text{node})- \left(w^{\text{left}}H\left(p_1^\text{left}\right) + w^{\text{right}}H\left(p_1^\text{right}\right)\right),$$
+
+and $H$ is the entropy, defined as
+
+$$H(p_1) = -p_1 \text{log}_2(p_1) - (1- p_1) \text{log}_2(1- p_1)$$
+
+Remember that log here is defined to be in base 2. Run the code block below to see by yourself how the entropy. $H(p)$ behaves while $p$ varies.
+
+Note that the H attains its higher value when $p = 0.5$. This means that the probability of event is $0.5$. And its minimum value is attained in 
+$p = 0$ and $p = 1$, i.e., the probability of the event happening is totally predictable. Thus, the entropy shows the degree of predictability of an event.
+"""
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from utils import *
+
+_ = plot_entropy()
+""" IMPORTING THE DATASET ( IMAGES OF CATS AND NOT CATS)
+|                                                     |   Ear Shape | Face Shape | Whiskers |   Cat  |
+|:---------------------------------------------------:|:---------:|:-----------:|:---------:|:------:|
+| <img src="images/0.png" alt="drawing" width="50"/> |   Pointy   |   Round     |  Present  |    1   |
+| <img src="images/1.png" alt="drawing" width="50"/> |   Floppy   |  Not Round  |  Present  |    1   |
+| <img src="images/2.png" alt="drawing" width="50"/> |   Floppy   |  Round      |  Absent   |    0   |
+| <img src="images/3.png" alt="drawing" width="50"/> |   Pointy   |  Not Round  |  Present  |    0   |
+| <img src="images/4.png" alt="drawing" width="50"/> |   Pointy   |   Round     |  Present  |    1   |
+| <img src="images/5.png" alt="drawing" width="50"/> |   Pointy   |   Round     |  Absent   |    1   |
+| <img src="images/6.png" alt="drawing" width="50"/> |   Floppy   |  Not Round  |  Absent   |    0   |
+| <img src="images/7.png" alt="drawing" width="50"/> |   Pointy   |  Round      |  Absent   |    1   |
+| <img src="images/8.png" alt="drawing" width="50"/> |    Floppy  |   Round     |  Absent   |    0   |
+| <img src="images/9.png" alt="drawing" width="50"/> |   Floppy   |  Round      |  Absent   |    0   |
+
+
+We will use **one-hot encoding** to encode the categorical features. They will be as follows:
+
+- Ear Shape: Pointy = 1, Floppy = 0
+- Face Shape: Round = 1, Not Round = 0
+- Whiskers: Present = 1, Absent = 0
+
+Therefore, we have two sets:
+
+- `X_train`: for each example, contains 3 features:
+
+            - Ear Shape (1 if pointy, 0 otherwise)
+            - Face Shape (1 if round, 0 otherwise)
+            - Whiskers (1 if present, 0 otherwise)
+            
+- `y_train`: whether the animal is a cat
+
+            - 1 if the animal is a cat
+            - 0 otherwise
+"""
+X_train = np.array([[1, 1, 1],
+[0, 0, 1],
+ [0, 1, 0],
+ [1, 0, 1],
+ [1, 1, 1],
+ [1, 1, 0],
+ [0, 0, 0],
+ [1, 1, 0],
+ [0, 1, 0],
+ [0, 1, 0]])
+
+y_train = np.array([1, 1, 0, 0, 1, 1, 0, 1, 0, 0])
+
