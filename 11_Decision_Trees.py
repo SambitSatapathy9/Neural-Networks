@@ -68,3 +68,35 @@ X_train = np.array([[1, 1, 1],
 
 y_train = np.array([1, 1, 0, 0, 1, 1, 0, 1, 0, 0])
 
+"""On each node, we compute the information gain for each feature, then split the node on the feature with the higher information gain, by comparing the entropy of the node with the weighted entropy in the two splitted nodes.
+
+So, the root node has every animal in our dataset. Remember that pnode1
+
+is the proportion of positive class (cats) in the root node. So
+
+pnode1=510=0.5
+
+Now let's write a function to compute the entropy."""
+def entropy(p):
+    if p == 0 or p == 1:
+        return 0
+    else:
+        S = -p*np.log2(p) - (1-p)*np.log2(1-p)
+        return S
+    
+print (entropy(0.5))
+
+def split_indices(X, index_feature):
+    left_indices = []
+    right_indices = []
+    for i,x in enumerate(X):
+        if x[index_feature] == 1:
+            left_indices.append(i)
+        else:
+            right_indices.append(i)
+    return left_indices, right_indices
+
+split_indices(X_train, 0)
+
+
+
