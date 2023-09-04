@@ -98,5 +98,31 @@ def split_indices(X, index_feature):
 
 split_indices(X_train, 0)
 
+def weighted_entropy(X,y,left_indices, right_idices):
+    w_left = len(left_indices)/len(X)
+    w_right = len(right_indices)/len(X)
+    
+    p_left = sum(y[left_indices])/len(left_indices)
+    p_right = sum(y[right_indices])/len(right_indices)
+
+    weighted_entropy = w_left * entropy(p_left) + w_right * entropy(p_right)
+    
+    return weighted_entropy
+
+
+left_indices, right_indices = split_indices(X_train, 0)
+weighted_entropy(X_train, y_train, left_indices, right_indices)
+
+def information_gain(X, y, left_indices, right_indices):
+    """
+    Here, X has the elements in the node and y is theirs respectives classes
+    """
+    p_node = sum(y)/len(y)
+    h_node = entropy(p_node)
+    w_entropy = weighted_entropy(X,y,left_indices,right_indices)
+    return h_node - w_entropy
+
+information_gain(X_train, y_train, left_indices, right_indices)
+
 
 
