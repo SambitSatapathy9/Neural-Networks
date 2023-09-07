@@ -76,4 +76,94 @@ The hyperparameters we will use and investigate here are:
    
 **(i) min_samples_split**
 """
+from sklearn.tree import DecisionTreeClassifier
+
+min_samples_split_list = np.array([2,10,30,50,100,200,300,700])
+max_depth_list = np.array([1,2,3,4,8,16,32,None]) 
+#None refers to there's no depth limit
+
+accuracy_list_train = []
+accuracy_list_val   = []
+
+for min_samples_split in min_samples_split_list:
+    model = DecisionTreeClassifier(min_samples_split=min_samples_split,
+                                  random_state = RANDOM)
+    #Fit the model
+    model.fit(X_train, y_train)
+    
+    #Predict the training model and the validation model
+    pred_train = model.predict(X_train)
+    pred_val = model.predict(X_val)
+    
+    accuracy_train = accuracy_score(pred_train, y_train)
+    accuracy_list_train.append(accuracy_train)
+    
+    accuracy_val   = accuracy_score(pred_val, y_val)
+    accuracy_list_val.append(accuracy_val)
+    
+#Plot the accuracy scores vs min_samples_split
+plt.xticks(ticks = range(len(min_samples_split_list)), 
+           labels=min_samples_split_list)
+plt.plot(accuracy_list_train, label='Train')
+plt.plot(accuracy_list_val, label="Validation")
+plt.xlabel("min_samples_split")
+plt.ylabel("Accuracy score")
+plt.title('Train x Validation metrics')
+plt.legend()
+
+#(ii) max_depth
+accuracy_list_train = []
+accuracy_list_val   = []
+
+for max_depth in max_depth_list:
+    model = DecisionTreeClassifier(max_depth = max_depth, random_state = RANDOM)
+    
+    #Fit the model
+    model.fit(X_train, y_train)
+    
+    #Predict the train and validation model
+    pred_train = model.predict(X_train)
+    pred_val   = model.predict(X_val)
+    
+    #Accuracy scores
+    accuracy_train = accuracy_score(pred_train, y_train)
+    accuracy_list_train.append(accuracy_train)
+    
+    accuracy_val   = accuracy_score(pred_val, y_val)
+    accuracy_list_val.append(accuracy_val)
+    
+#Plot the accuracy_score vs max_depth
+plt.xticks(ticks = range(len(max_depth_list)), labels = max_depth_list)
+plt.plot(accuracy_list_train, label='Train')
+plt.plot(accuracy_list_val, label = 'Validation')
+plt.legend()
+plt.xlabel("max depth")
+plt.ylabel("accuracy score")
+plt.title("Train x Validation metrics")
+plt.show()
+
+"""
+**From the above two graphs we can conclude that:**
+- The accuracy score is max for validation set in min_samples_split when it is 50
+- The accuracy score is max for validation set in max_depth when it is 4
+
+- `max_depth = 4`
+- `min_samples_split = 50`
+
+### Build a Decision Tree Model with best metrics
+
+"""
+
+
+
+
+
+
+
+
+
+
+
+
+
 
