@@ -153,9 +153,23 @@ plt.show()
 ### Build a Decision Tree Model with best metrics
 
 """
+decision_tree_model = DecisionTreeClassifier(min_samples_split=50,
+                                            max_depth = 4, 
+                                            random_state=RANDOM)
+#Fit the model
+decision_tree_model.fit(X_train, y_train)
 
+#Predict the train and validation sets
+pred_train = decision_tree_model.predict(X_train)
+pred_val   = decision_tree_model.predict(X_val)
 
+acc_train = accuracy_score(pred_train, y_train)
+acc_val   = accuracy_score(pred_val, y_val)
 
+print(f"Accuracy score for Training set: {acc_train:.4f}")
+print(f"Accuracy score for Validation set: {acc_val:.4f}")
+
+#**No sign of overfitting even though the metrics are not that good**
 
 
 
