@@ -239,6 +239,28 @@ plt.plot(accuracy_list_val)
 plt.legend(['Train','Validation'])
 
 
+#**(iii)** n_estimators
+
+accuracy_list_train = []
+accuracy_list_val = []
+for n_estimators in n_estimators_list:
+    # You can fit the model at the same time you define it, because the fit function returns the fitted estimator.
+    model = RandomForestClassifier(n_estimators = n_estimators,
+                                   random_state = RANDOM).fit(X_train,y_train) 
+    predictions_train = model.predict(X_train) ## The predicted values for the train dataset
+    predictions_val = model.predict(X_val) ## The predicted values for the test dataset
+    accuracy_train = accuracy_score(predictions_train,y_train)
+    accuracy_val = accuracy_score(predictions_val,y_val)
+    accuracy_list_train.append(accuracy_train)
+    accuracy_list_val.append(accuracy_val)
+
+plt.title('Train x Validation metrics')
+plt.xlabel('n_estimators')
+plt.ylabel('accuracy')
+plt.xticks(ticks = range(len(n_estimators_list )),labels=n_estimators_list)
+plt.plot(accuracy_list_train)
+plt.plot(accuracy_list_val)
+plt.legend(['Train','Validation'])
 
 
 
