@@ -170,7 +170,73 @@ print(f"Accuracy score for Training set: {acc_train:.4f}")
 print(f"Accuracy score for Validation set: {acc_val:.4f}")
 
 #**No sign of overfitting even though the metrics are not that good**
+"""
+### 4.2 Random Forest
+Now let's try the Random Forest algorithm also, using the Scikit-learn implementation. 
+- All of the hyperparameters found in the decision tree model will also exist in this algorithm, since a random forest is an ensemble of many Decision Trees.
+- One additional hyperparameter for Random Forest is called `n_estimators` which is the number of Decision Trees that make up the Random Forest. 
+- if $n$ is the number of features, we will randomly select $\sqrt{n}$ of these features to train each individual tree. 
+- Note that you can modify this by setting the `max_features` parameter.
+You can also speed up your training jobs with another parameter, `n_jobs`. 
+- Since the fitting of each tree is independent of each other, it is possible fit more than one tree in parallel. 
+- So setting `n_jobs` higher will increase how many CPU cores it will use.
+"""
+min_samples_split_list = [2,10, 30, 50, 100, 200, 300, 700]  ## If the number is an integer, then it is the actual quantity of samples,
+                                             ## If it is a float, then it is the percentage of the dataset
+max_depth_list = [2, 4, 8, 16, 32, 64, None]
+n_estimators_list = [10,50,100,500]
 
+#**(i) min_samples_split**
+accuracy_list_train = []
+accuracy_list_val = []
+
+for min_samples_split in min_samples_split_list:
+    model = RandomForestClassifier(min_samples_split=min_samples_split,
+                                  random_state=RANDOM)
+    model.fit(X_train,y_train)
+    
+    pred_train = model.predict(X_train)
+    pred_val   = model.predict(X_val)
+    
+    acc_train = accuracy_score(pred_train, y_train)
+    accuracy_list_train.append(acc_train)
+    
+    acc_val   = accuracy_score(pred_val, y_val)
+    accuracy_list_val.append(acc_val)
+    
+#Plot the accuracy score vs min_samples_split
+plt.title('Train x Validation metrics')
+plt.xlabel('max_depth')
+plt.ylabel('accuracy')
+plt.xticks(ticks = range(len(min_samples_split_list)), labels = min_samples_split_list)
+plt.plot(accuracy_list_train)
+plt.plot(accuracy_list_val)
+plt.legend(['Train','Validation'])
+
+"""
+Notice that, even though the validation accuraty reaches is the same both at `min_samples_split = 2` and `min_samples_split = 10`, in the latter the difference in training and validation set reduces, showing less overfitting.
+"""
+#**(ii) max_depth**
+accuracy_list_train = []
+accuracy_list_val = []
+for max_depth in max_depth_list:
+    # You can fit the model at the same time you define it, because the fit function returns the fitted estimator.
+    model = RandomForestClassifier(max_depth = max_depth,
+                                   random_state = RANDOM).fit(X_train,y_train) 
+    predictions_train = model.predict(X_train) ## The predicted values for the train dataset
+    predictions_val = model.predict(X_val) ## The predicted values for the test dataset
+    accuracy_train = accuracy_score(predictions_train,y_train)
+    accuracy_val = accuracy_score(predictions_val,y_val)
+    accuracy_list_train.append(accuracy_train)
+    accuracy_list_val.append(accuracy_val)
+
+plt.title('Train x Validation metrics')
+plt.xlabel('max_depth')
+plt.ylabel('accuracy')
+plt.xticks(ticks = range(len(max_depth_list )),labels=max_depth_list)
+plt.plot(accuracy_list_train)
+plt.plot(accuracy_list_val)
+plt.legend(['Train','Validation'])
 
 
 
